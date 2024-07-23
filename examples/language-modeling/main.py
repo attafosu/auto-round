@@ -273,6 +273,21 @@ if __name__ == '__main__':
         print(f"warning, low_gpu_mem_usage=False is strongly recommended if the whole model could be loaded to "
               f"gpu")
 
+    if 'cnn_dailymail' in args.dataset:
+        assert os.path.exists(args.dataset), "{} could not be found. Check path again"
+
+        from cnn_dailymail_dataset import Dataset_CNN
+        print(f"Cal data path: {args.dataset}")
+        args.dataset = Dataset_CNN(dataset_path=args.dataset,
+                                   model_checkpoint_path=args.model_name,
+                                   total_sample_count=args.nsamples,
+                                   pad_inputs=True,
+                                   max_seq_len=args.seqlen
+                                   )
+
+        args.dataset.loadDataset()
+
+    print("========= Dataset loaded ============")
     autoround = round(model, tokenizer, args.bits, args.group_size, sym=args.sym, batch_size=args.train_bs,
                       dataset=args.dataset, seqlen=seqlen, nblocks=args.nblocks, iters=args.iters, lr=args.lr,
                       minmax_lr=args.minmax_lr, enable_quanted_input=not args.disable_quanted_input, device=device_str,
